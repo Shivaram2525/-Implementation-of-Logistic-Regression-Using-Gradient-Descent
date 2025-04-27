@@ -29,46 +29,71 @@ Developed by   : Shivaram M.
 RegisterNumber :  212223040195
 ```
 ```
-import numpy as np
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
-from sklearn.metrics import accuracy_score,confusion_matrix
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import SGDClassifier
-from sklearn.datasets import load_iris
-
-iris=load_iris()
-
-df=pd.DataFrame(iris.data,columns=iris.feature_names)
-df['Target']=iris.target
-
+import numpy as np
+df=pd.read_csv("Home/.../.../.../Placement_Data.csv")
+df
+df=df.drop('sl_no',axis=1)
+df=df.drop('salary',axis=1)
 df.head()
+df["gender"]=df["gender"].astype("category")
+df["ssc_b"]=df["ssc_b"].astype("category")
+df["hsc_b"]=df["hsc_b"].astype("category")
+df["hsc_s"]=df["hsc_s"].astype("category")
+df["degree_t"]=df["degree_t"].astype("category")
+df["workex"]=df["workex"].astype("category")
+df["specialisation"]=df["specialisation"].astype("category")
+df["status"]=df["status"].astype("category")
+df.dtypes
+df["gender"]=df["gender"].cat.codes
+df["ssc_b"]=df["ssc_b"].cat.codes
+df["hsc_b"]=df["hsc_b"].cat.codes
+df["hsc_s"]=df["hsc_s"].cat.codes
+df["degree_t"]=df["degree_t"].cat.codes
+df["workex"]=df["workex"].cat.codes
+df["specialisation"]=df["specialisation"].cat.codes
+df["status"]=df["status"].cat.codes
+df
+x=df.iloc[:,:-1].values
+y=df.iloc[:,-1].values
+y
+theta = np.random.randn(x.shape[1])
+Y=y
+def sigmoid(z):
+    return 1/(1+np.exp(-z))
+def loss(theta,x,Y):
+    h=sigmoid(x.dot(theta))
+    return -np.sum(Y*np.log(h)+(1-Y)*np.log(1-h))
 
-X=df.drop(columns='Target')
-Y=df['Target']
+def gradient_descent(theta,x,Y,alpha,num_iterations):
+    m=len(Y)
+    for i in range(num_iterations):
+        h=sigmoid(x.dot(theta))
+        gradient=x.T.dot(h-y)/m
+        theta-=alpha*gradient
+    return theta
 
-X_train,X_test,Y_train,Y_test=train_test_split(X,Y,test_size=0.2,stratify=Y,random_state=1)
-
-model=SGDClassifier(max_iter=1000,tol=0.001)
-
-model.fit(X_train,Y_train)
-
-accuracy=model.predict(X_test)
-score=accuracy_score(Y_test,accuracy)
-print(f"Accuracy Score is {score}")
-
-conf_mat=confusion_matrix(accuracy,Y_test)
-print(conf_mat)
-
-sns.heatmap(df.corr(),annot=True)
+theta=gradient_descent(theta,x,Y,alpha=0.01,num_iterations=1000)
+def predict(theta,x):
+    h=sigmoid(x.dot(theta))
+    y_pred=np.where(h>0.5,1,0)
+    return y_pred
+y_pred=predict(theta,x)
+accuracy=np.mean(y_pred.flatten()==Y)
+print("Accuracy:",accuracy)
+print(y_pred)
+xnew=np.array([[0,87,0,95,0,2,78,2,0,0,1,0]])
+y_prednew=predict(theta,xnew)
+print(y_prednew)
+xnew=np.array([[0,0,0,0,0,2,8,2,0,0,1,0]])
+y_prednew=predict(theta,xnew)
+print(y_prednew)
 
 ```
 
 ## Output:
 
-<img width="1625" alt="EXP06" src="https://github.com/user-attachments/assets/6445af02-8927-40f8-a9aa-9bac0562cf9d" />
-
+<img width="1387" alt="EX06" src="https://github.com/user-attachments/assets/673c76e6-3955-41f4-b002-f7493b975ef8" />
 
 ## Result:
 Thus the program to implement the the Logistic Regression Using Gradient Descent is written and verified using python programming.
